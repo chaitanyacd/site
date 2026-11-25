@@ -1,0 +1,52 @@
+/* Chaitanya · shared styles: palette, header, full-screen menu, footer */
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --black:#0C0C0C; --white:#F2F2F2;
+  --bold:#EF4B3C; --rise:#FFBD17; --calm:#1973C0; --flow:#1DA849; --roam:#F9B6B1; --peach:#E8C5AC;
+  --site-h:58px;
+  /* the diary and Borrowed IQ pages use these older names, now mapped onto the palette */
+  --bg:#0C0C0C; --panel:#171717; --ink:#F2F2F2; --mute:#a6a6a6; --line:#2a2a2a;
+  --pink:#F9B6B1; --star:#1DA849; --tv:#1973C0; --bk:#E8C5AC; --gn:#EF4B3C;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:'Space Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+a:hover{color:var(--rise)}
+:focus-visible{outline:2px solid var(--rise);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Page spacing for the fixed header */
+body[data-page=diary]{padding-top:calc(var(--site-h) + 20px)}
+body[data-page=iq]{padding-top:var(--site-h)}
+body[data-page=iq] .hdr{top:var(--site-h)}
+
+/* Header */
+.site-hdr{position:fixed;top:0;left:0;right:0;z-index:50;height:var(--site-h);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:var(--black);border-bottom:1px solid var(--line)}
+.site-hdr.over{background:linear-gradient(var(--black),rgba(12,12,12,0));border-bottom:0}
+.site-logo{display:inline-flex;align-items:center;gap:10px;color:var(--white);text-decoration:none;font-weight:700;font-size:16px}
+.site-logo:hover{color:var(--rise)}
+.mark{width:30px;height:20px;display:block}
+.menu-btn{background:none;border:1px solid var(--white);color:var(--white);padding:8px 18px;border-radius:999px;cursor:pointer;font:inherit;font-size:13px}
+.menu-btn:hover{background:var(--rise);border-color:var(--rise);color:var(--black)}
+
+/* Full-screen menu */
+.site-menu{position:fixed;inset:0;z-index:100;background:var(--black);display:flex;flex-direction:column;padding:0 24px 32px;overflow:auto;animation:menuin .2s ease}
+.site-menu[hidden]{display:none}
+@keyframes menuin{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.site-menu{animation:none}}
+.site-menu-top{height:var(--site-h);flex:none;display:flex;align-items:center;justify-content:space-between}
+.site-menu ul{list-style:none;margin:0;padding:0}
+.site-menu .big{margin-top:6vh}
+.site-menu .big a{display:inline-block;font-size:clamp(34px,8vw,84px);font-weight:700;line-height:1.15;padding:4px 0;color:var(--white);text-decoration:none}
+.site-menu .big a:hover{color:var(--rise)}
+.site-menu .big a[aria-current=page]::after{content:'';display:inline-block;width:.26em;height:.26em;border-radius:50%;background:var(--bold);margin-left:.3em}
+.site-menu .small{margin-top:auto;padding-top:40px;display:flex;flex-wrap:wrap;gap:12px 28px}
+.site-menu .small a{color:var(--white);font-size:15px;text-underline-offset:4px}
+
+/* Footer */
+.site-ftr{padding:28px 24px;border-top:1px solid var(--line);color:var(--mute);font-size:12px;margin-top:40px}
+body[data-page=home] .site-ftr{margin-top:0}
+
+@media(max-width:640px){
+  .site-hdr,.site-menu{padding-left:16px;padding-right:16px}
+}
