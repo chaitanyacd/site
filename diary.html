@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Film, TV and reading diary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#14181c;--panel:#1f252b;--ink:#e8edf1;--mute:#8a98a5;--star:#00c030;--tv:#40bcf4;--bk:#ff8000;--gn:#a78bfa;--line:#2c343c;--pink:#FFAAE3;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 'Space Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding:24px;max-width:1400px;margin-inline:auto}
+  h1{margin:0 0 4px;font-size:26px;font-weight:400;color:var(--pink);overflow-wrap:anywhere}
+  h2{margin:0;font-size:18px;font-weight:400}
+  .sub{color:var(--mute);margin:0 0 18px;font-size:12px;display:flex;flex-wrap:wrap;gap:6px 18px}
+  .sum{display:inline-flex;align-items:center;gap:6px}
+  .ico{display:inline-flex}
+  .ico svg{width:16px;height:16px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  select,input,button{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;font-size:13px}
+  select:focus,input:focus,button:focus-visible,.film:focus-visible,summary:focus-visible{outline:2px solid var(--star);outline-offset:2px}
+
+  .stats{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:28px;background:var(--panel)}
+  .stats summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:14px 16px}
+  .stats summary::-webkit-details-marker{display:none}
+  .stats summary::before{content:"";width:8px;height:8px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(-45deg);transition:transform .15s}
+  .stats[open] summary::before{transform:rotate(45deg)}
+  .stats-body{padding:0 16px 16px}
+  .stats-top{display:flex;justify-content:flex-end;margin-bottom:12px}
+  .stats select{background:var(--bg)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:18px}
+  .cards.yir{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-bottom:0}
+  .card{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .card b{display:block;font-size:19px;font-weight:400;overflow-wrap:anywhere}
+  .card.t b{font-size:13px;line-height:1.5}
+  .card span{font-size:11px;color:var(--mute)}
+  h3{margin:0 0 10px;font-size:13px;font-weight:400;color:var(--mute)}
+  .two{display:grid;grid-template-columns:3fr 2fr;gap:24px;margin-bottom:22px}
+  @media(max-width:640px){.two{grid-template-columns:1fr}}
+  .months{display:flex;align-items:flex-end;gap:6px;height:160px}
+  .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+  .col .n{font-size:11px;color:var(--mute);height:16px}
+  .col .stack{width:100%;display:flex;flex-direction:column-reverse;border-radius:4px 4px 0 0;overflow:hidden}
+  .col .lab{font-size:10px;color:var(--mute);margin-top:4px}
+  .legend{font-size:11px;color:var(--mute);margin-top:8px;display:flex;flex-wrap:wrap;gap:14px}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px}
+  .grow{display:grid;grid-template-columns:110px 1fr 28px;align-items:center;gap:8px;margin-bottom:7px;font-size:12px}
+  .grow .bar{height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+  .grow .bar i{display:block;height:100%;background:var(--star)}
+  .grow .v{text-align:right;color:var(--mute)}
+  .note{font-size:11px;color:var(--mute);margin-top:10px}
+
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+  .controls input{flex:1;min-width:140px}
+  .filters{display:contents}
+  .fbtn{display:none;cursor:pointer}
+
+  /* Apple TV-style cards: tall 2:3 posters, rounded corners, soft outline */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px 18px}
+  .film{background:none;border:0;padding:0;text-align:left;color:inherit;cursor:pointer;font:inherit}
+  .poster{position:relative;aspect-ratio:2/3;background:var(--panel);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.18);box-shadow:0 2px 10px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;padding:8px;text-align:center;color:var(--mute);font-size:12px;overflow-wrap:anywhere;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+  .poster img{width:100%;height:100%;object-fit:cover;display:block;margin:-8px}
+  @media (hover:hover){.film:hover .poster{transform:translateY(-4px) scale(1.02);box-shadow:0 10px 24px rgba(0,0,0,.5);border-color:rgba(255,255,255,.35)}}
+  @media (prefers-reduced-motion:reduce){.poster{transition:none}.film:hover .poster{transform:none}}
+  .tag{position:absolute;top:8px;left:8px;background:rgba(20,24,28,.85);color:var(--ink);font-size:10px;padding:2px 7px;border-radius:6px;border:1px solid var(--line)}
+  .tag.re{top:auto;bottom:8px;color:var(--pink);border-color:var(--pink)}
+  .meta{margin-top:8px;font-size:11px;color:var(--mute);display:flex;justify-content:space-between;gap:4px}
+  .stars{color:var(--star);letter-spacing:1px}
+  .name{font-size:12px;margin-top:4px;line-height:1.3;overflow-wrap:anywhere}
+  .by{font-size:11px;color:var(--mute);overflow-wrap:anywhere}
+  .count{color:var(--mute);font-size:12px;margin-bottom:12px}
+  .empty{grid-column:1/-1;color:var(--mute);padding:40px 0;text-align:center;line-height:1.7}
+
+  /* Year dividers */
+  .yr{grid-column:1/-1;display:flex;align-items:center;gap:14px;margin:18px 0 0}
+  .yr:first-child{margin-top:0}
+  .yr span{font-size:22px;color:var(--pink);line-height:1}
+  .yr i{flex:1;height:1px;background:var(--line)}
+  .yr em{font-style:normal;font-size:11px;color:var(--mute);white-space:nowrap}
+
+  /* Phones: three posters per row, filters behind a button */
+  @media(max-width:640px){
+    body{padding:14px}
+    h1{font-size:22px}
+    .fbtn{display:block}
+    .filters{display:none;flex-basis:100%;flex-wrap:wrap;gap:8px}
+    .filters.open{display:flex}
+    .filters select{flex:1 1 calc(50% - 8px)}
+    .grid{grid-template-columns:repeat(3,1fr);gap:16px 8px}
+    .poster{border-radius:10px;padding:4px;font-size:11px}
+    .poster img{margin:-4px}
+    .tag{top:5px;left:5px;font-size:8px;padding:1px 4px;border-radius:4px}
+    .tag.re{top:auto;bottom:5px}
+    .name{font-size:11px}
+    .by{font-size:10px}
+    .meta{flex-direction:column;gap:1px;font-size:10px}
+    .stats-body{padding:0 12px 14px}
+    .yr span{font-size:19px}
+  }
+</style>
+<link rel="stylesheet" href="site.css">
+<script src="site.js" defer></script>
+</head>
+<body data-page="diary">
+<h1>Film, TV and reading diary</h1>
+<p class="sub" id="summary">Loading…</p>
+
+<details class="stats">
+  <summary><h2>Stats</h2></summary>
+  <div class="stats-body">
+    <div class="stats-top"><select id="year" aria-label="Year"></select></div>
+    <div class="cards" id="cards"></div>
+    <div class="two">
+      <div>
+        <h3 id="chartTitle">Per month</h3>
+        <div class="months" id="months"></div>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--star)"></i>Films</span>
+          <span><i class="dot" style="background:var(--tv)"></i>TV shows</span>
+        </div>
+      </div>
+      <div>
+        <h3>Top genres</h3>
+        <div id="topgenres"></div>
+      </div>
+    </div>
+    <h3 id="yirTitle">Year in review</h3>
+    <div class="cards yir" id="yir"></div>
+    <div class="note" id="timeNote"></div>
+  </div>
+</details>
+
+<div class="controls">
+  <input id="q" type="search" placeholder="Search titles or authors" aria-label="Search titles or authors">
+  <button class="fbtn" id="fbtn" type="button" aria-expanded="false" aria-controls="filters">Filters</button>
+  <div class="filters" id="filters">
+    <select id="type" aria-label="Type">
+      <option value="">All</option>
+      <option value="movie">Movies</option>
+      <option value="tv">TV shows</option>
+      <option value="book">Books</option>
+      <option value="gn">Graphic novels</option>
+    </select>
+    <select id="genre" aria-label="Genre"><option value="">All genres</option></select>
+    <select id="decade" aria-label="Decade"><option value="">All decades</option></select>
+    <select id="rating" aria-label="Rating">
+      <option value="">All ratings</option>
+      <option value="5">5 ★</option>
+      <option value="4">4 ★ and up</option>
+      <option value="3">3 ★ and up</option>
+      <option value="none">Unrated</option>
+    </select>
+    <select id="sort" aria-label="Sort">
+      <option value="date">Most recent</option>
+      <option value="rating">Highest rated</option>
+      <option value="title">Title A–Z</option>
+    </select>
+  </div>
+</div>
+<div class="count" id="count"></div>
+<div class="grid" id="grid"></div>
+
+<script>
+/* ===== 1. YOUR SHEET LINK (already filled in) ===== */
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTj6KMGSl8B5QMi1alkTwjdItAjxE8g4eW3uz1emvPtv29lml0xP1Soagn45S_vYtess6o5g_fVgvJe/pub?gid=522183626&single=true&output=csv';
+/* ===== 2. EVERYTHING BELOW STAYS AS IT IS ===== */
+
+const TMDB_KEY = '8823545e032f67940cb4ac537d6b367b';
+const TMDB='https://api.themoviedb.org/3/';
+
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const KINDS=[['movie','m','--star'],['tv','t','--tv']];
+const ICON={
+  movie:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/></svg>',
+  tv:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 3l4 4 4-4"/></svg>',
+  book:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>',
+  gn:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18M10 3v9M14 12v9"/></svg>'
+};
+let films = [];
+const $ = id => document.getElementById(id);
+
+const stars = r => '★'.repeat(Math.floor(r)) + (r % 1 ? '½' : '');
+const fmt = d => d ? new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hm = m => Math.floor(m/60).toLocaleString()+' h '+Math.round(m%60)+' m';
+const kindOf = t => /graphic|comic|manga/i.test(t||'') ? 'gn' : /book/i.test(t||'') ? 'book' : /tv/i.test(t||'') ? 'tv' : 'movie';
+const isRead = f => f.type==='book' || f.type==='gn';
+const tagOf = f => f.type==='tv' ? 'TV'+(f.season?' S'+f.season:'') : f.type==='book' ? 'Book' : f.type==='gn' ? 'Graphic novel' : '';
+const decadeOf = f => { const y=f.rel||+f.year||0; return y?Math.floor(y/10)*10:0; };
+const yr = s => { const n=parseInt(String(s||'').slice(0,4),10); return n>1000?n:0; };
+const norm = s => String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'');
+const uniqKey = f => f.type+'|'+norm(f.title)+'|'+(f.year||f.rel||'');
+
+/* ---------- Read the Google Sheet ---------- */
+function parseCSV(text){
+  const rows=[]; let row=[], cur='', q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; }
+      else cur+=c;
+    } else if(c==='"') q=true;
+    else if(c===','){ row.push(cur); cur=''; }
+    else if(c==='\n'||c==='\r'){
+      if(c==='\r'&&text[i+1]==='\n') i++;
+      row.push(cur); cur='';
+      if(row.some(x=>x.trim()!=='')) rows.push(row);
+      row=[];
+    } else cur+=c;
+  }
+  row.push(cur);
+  if(row.some(x=>x.trim()!=='')) rows.push(row);
+  return rows;
+}
+
+// Accepts 2023-03-15, 3/15/2023, or just 2023 (placed on January 1)
+function toDate(v){
+  v=String(v||'').trim();
+  if(!v) return '';
+  if(/^\d{4}$/.test(v)) return v+'-01-01';
+  if(/^\d{4}-\d{2}-\d{2}/.test(v)) return v.slice(0,10);
+  const d=new Date(v);
+  if(isNaN(d.getTime())) return '';
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+async function loadFilms(){
+  if(SHEET_CSV_URL.startsWith('PASTE')) throw new Error('no-url');
+  const url=SHEET_CSV_URL+(SHEET_CSV_URL.includes('?')?'&':'?')+'_='+Date.now();
+  const res=await fetch(url);
+  if(!res.ok) throw new Error('http '+res.status);
+  const rows=parseCSV(await res.text());
+  if(rows.length<2) return [];
+  const head=rows[0].map(h=>h.toLowerCase().replace(/[^a-z0-9]/g,''));
+  return rows.slice(1).map(r=>{
+    const o={}; head.forEach((h,i)=>o[h]=(r[i]||'').trim()); return o;
+  }).filter(o=>o.title).map(o=>({
+    title:o.title, author:o.author||'', year:parseInt(o.year,10)||0,
+    date:toDate(o.watcheddate), rating:Math.min(5,parseFloat(o.rating)||0),
+    episodes:parseInt(o.episodes,10)||0, season:parseInt(o.season,10)||0,
+    cover:o.coverurl||'', tmdbId:parseInt(o.tmdbid,10)||0,
+    type:kindOf(o.type), poster:null, genres:[], minutes:0, rel:0, rewatch:false
+  }));
+}
+
+// Marks every viewing after the first (by watched date) as a rewatch.
+// For TV, each season is tracked separately.
+function markRewatches(){
+  const seen={};
+  films.forEach(f=>f.rewatch=false);
+  films.filter(f=>f.date).sort((a,b)=>a.date.localeCompare(b.date)).forEach(f=>{
+    const k=uniqKey(f)+'|'+(f.season||0);
+    if(seen[k]) f.rewatch=true; else seen[k]=1;
+  });
+}
+
+function cacheGet(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+function cacheSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+
+/* ---------- Posters: films and TV (TMDB) ---------- */
+// Prefer a result whose title matches exactly (so "Party" beats "Bachelor Party")
+function pickBest(results,title){
+  if(!results||!results.length) return null;
+  const t=norm(title);
+  return results.find(r=>norm(r.title||r.name)===t||norm(r.original_title||r.original_name)===t)||results[0];
+}
+
+async function tmdbSearch(tv,title,year){
+  let url=`${TMDB}search/${tv?'tv':'movie'}?api_key=${TMDB_KEY}&query=${encodeURIComponent(title)}`;
+  if(year) url+= tv ? `&first_air_date_year=${year}` : `&year=${year}`;
+  const data=await (await fetch(url)).json();
+  return data.results||[];
+}
+
+async function enrichScreen(f){
+  const tv=f.type==='tv';
+  const key='tmdb6:'+f.type+':'+f.title+(f.year||'')+':'+(f.season||0)+':'+(f.tmdbId||'');
+  let hit=cacheGet(key);
+  if(!hit){
+    try{
+      let id=f.tmdbId;
+      if(!id){
+        let results=await tmdbSearch(tv,f.title,f.year);
+        // Release years are often off by one between sources, so try the neighbouring years too
+        if(!results.length&&f.year){
+          for(const y of [f.year-1,f.year+1]){
+            results=await tmdbSearch(tv,f.title,y);
+            if(results.length) break;
+          }
+        }
+        const r=pickBest(results,f.title);
+        if(r) id=r.id;
+      }
+      if(id){
+        const d=await (await fetch(`${TMDB}${tv?'tv':'movie'}/${id}?api_key=${TMDB_KEY}`)).json();
+        if(d&&d.id){
+          const per = tv ? ((d.episode_run_time&&d.episode_run_time[0]) || (d.last_episode_to_air&&d.last_episode_to_air.runtime) || 45) : (d.runtime||0);
+          let eps = tv ? (d.number_of_episodes||0) : 1;
+          let poster = d.poster_path;
+          if(tv && f.season){
+            const s=await (await fetch(`${TMDB}tv/${id}/season/${f.season}?api_key=${TMDB_KEY}`)).json();
+            if(s.poster_path) poster=s.poster_path;
+            if(s.episodes&&s.episodes.length) eps=s.episodes.length;
+          }
+          hit={poster,genres:(d.genres||[]).map(g=>g.name).filter(Boolean),per,eps,yr:yr(tv?d.first_air_date:d.release_date)};
+          cacheSet(key,hit);
+        }
+      }
+    }catch(e){}
+  }
+  if(hit){
+    f.poster=hit.poster?'https://image.tmdb.org/t/p/w342'+hit.poster:null;
+    f.genres=hit.genres;
+    f.rel=hit.yr||0;
+    f.minutes = tv ? hit.per*(f.episodes||hit.eps) : hit.per;
+  }
+}
+
+/* ---------- Covers: books and graphic novels ---------- */
+async function enrichBook(f, searchTitle){
+  const key='bk4:'+searchTitle+'|'+(f.author||'');
+  let hit=cacheGet(key);
+  if(!hit){
+    hit={poster:null,genres:[],yr:0};
+    try{
+      const q='intitle:"'+searchTitle+'"'+(f.author?' inauthor:"'+f.author+'"':'');
+      const data=await (await fetch('https://www.googleapis.com/books/v1/volumes?maxResults=1&q='+encodeURIComponent(q))).json();
+      const v=data.items&&data.items[0]&&data.items[0].volumeInfo;
+      if(v){
+        let c=v.imageLinks&&(v.imageLinks.thumbnail||v.imageLinks.smallThumbnail);
+        if(c) hit.poster=c.replace('http://','https://').replace('&edge=curl','');
+        hit.genres=[...new Set((v.categories||[]).map(x=>x.split(' / ')[0]))];
+        hit.yr=yr(v.publishedDate);
+      }
+    }catch(e){}
+    if(!hit.poster||!hit.yr){
+      try{
+        let u='https://openlibrary.org/search.json?limit=1&fields=cover_i,subject,first_publish_year&title='+encodeURIComponent(searchTitle);
+        if(f.author) u+='&author='+encodeURIComponent(f.author);
+        const o=((await (await fetch(u)).json()).docs||[])[0];
+        if(o){
+          if(!hit.poster&&o.cover_i) hit.poster='https://covers.openlibrary.org/b/id/'+o.cover_i+'-M.jpg';
+          if(!hit.genres.length&&o.subject) hit.genres=o.subject.slice(0,2);
+          if(!hit.yr&&o.first_publish_year) hit.yr=o.first_publish_year;
+        }
+      }catch(e){}
+    }
+    if(hit.poster||hit.yr) cacheSet(key,hit);
+  }
+  f.poster=hit.poster;
+  f.genres=hit.genres;
+  f.rel=hit.yr||0;
+}
+
+// A Cover URL in the sheet overrides any automatic poster, for every type
+const enrich = async f => {
+  if(isRead(f)) await enrichBook(f, f.title.split(/:| - |—|–/)[0].trim());
+  else await enrichScreen(f);
+  if(f.cover) f.poster=f.cover;
+};
+
+/* ---------- Stats ---------- */
+function fillYears(){
+  const ys=[...new Set(films.map(f=>f.date.slice(0,4)).filter(Boolean))].sort().reverse();
+  const cur=$('year').value;
+  $('year').innerHTML='<option value="">All time</option>'+ys.map(y=>`<option value="${y}">${y}</option>`).join('');
+  $('year').value = ys.includes(cur) ? cur : (ys[0]||'');
+}
+
+function renderStats(){
+  const y=$('year').value;
+  const set=films.filter(f=>f.date && (!y || f.date.slice(0,4)===y));
+  const screen=set.filter(f=>!isRead(f));
+  const n=k=>set.filter(f=>f.type===k).length;
+  const uniq=k=>new Set(set.filter(f=>f.type===k).map(uniqKey)).size;
+  const watch=screen.reduce((t,f)=>t+(f.minutes||0),0);
+  const missing=screen.filter(f=>!f.minutes).length;
+  const rated=screen.filter(f=>f.rating);
+  const avg=rated.length?(rated.reduce((t,f)=>t+f.rating,0)/rated.length).toFixed(1):'–';
+
+  $('cards').innerHTML=[
+    [hm(watch),'Watch time'],
+    [n('movie'),'Films logged'],[uniq('movie'),'Unique films'],
+    [n('tv'),'TV shows logged'],[uniq('tv'),'Unique TV shows'],
+    [n('book'),'Books'],[n('gn'),'Graphic novels'],
+    [avg,'Average rating (films and TV)']
+  ].map(([b,s])=>`<div class="card"><b>${b}</b><span>${s}</span></div>`).join('');
+
+  const keys = y ? MONTHS.map((m,i)=>[m,String(i+1).padStart(2,'0')])
+                 : [...new Set(films.map(f=>f.date.slice(0,4)).filter(Boolean))].sort().map(v=>[v,v]);
+  const bucket = f => y ? f.date.slice(5,7) : f.date.slice(0,4);
+  $('chartTitle').textContent = y ? 'Per month in '+y : 'Per year';
+  const rows=keys.map(([lab,k])=>{
+    const inB=set.filter(f=>bucket(f)===k&&!isRead(f)), c={};
+    KINDS.forEach(([kind,key])=>c[key]=inB.filter(f=>f.type===kind).length);
+    return {lab,c,total:inB.length};
+  });
+  const max=Math.max(1,...rows.map(r=>r.total));
+  $('months').innerHTML=rows.map(r=>`
+    <div class="col" title="${r.lab}: ${r.total}">
+      <div class="n">${r.total||''}</div>
+      <div class="stack" style="height:${r.total/max*120}px">
+        ${KINDS.map(([kind,key,col])=>`<div style="flex:${r.c[key]};background:var(${col})"></div>`).join('')}
+      </div>
+      <div class="lab">${r.lab}</div>
+    </div>`).join('');
+
+  const counts={};
+  screen.forEach(f=>f.genres.forEach(g=>counts[g]=(counts[g]||0)+1));
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const gmax=top.length?top[0][1]:1;
+  $('topgenres').innerHTML=top.length?top.map(([g,c])=>`
+    <div class="grow"><span>${esc(g)}</span><div class="bar"><i style="width:${c/gmax*100}%"></i></div><span class="v">${c}</span></div>`).join('')
+    :'<div class="note">Genres appear once posters load.</div>';
+
+  // Year in review
+  $('yirTitle').textContent = y ? 'Year in review · '+y : 'All time in review';
+  const topRated=screen.filter(f=>f.rating).sort((a,b)=>b.rating-a.rating||b.date.localeCompare(a.date)).slice(0,3);
+  const topGenre=top[0];
+  const mc={}; set.forEach(f=>{const k=f.date.slice(0,7); mc[k]=(mc[k]||0)+1;});
+  const busiest=Object.entries(mc).sort((a,b)=>b[1]-a[1])[0];
+  const longest=screen.filter(f=>f.type==='movie'&&f.minutes).sort((a,b)=>b.minutes-a.minutes)[0];
+  const rew=set.filter(f=>f.rewatch).length;
+  $('yir').innerHTML=[
+    [topRated.length?topRated.map(f=>esc(f.title)+' '+stars(f.rating)).join('<br>'):'–','Top rated'],
+    [topGenre?esc(topGenre[0])+' ('+topGenre[1]+')':'–','Most watched genre'],
+    [busiest?MONTHS[+busiest[0].slice(5,7)-1]+' '+busiest[0].slice(0,4)+' ('+busiest[1]+')':'–','Busiest month'],
+    [longest?esc(longest.title)+' · '+hm(longest.minutes):'–','Longest film'],
+    [rew,'Rewatches']
+  ].map(([b,s])=>`<div class="card t"><b>${b}</b><span>${s}</span></div>`).join('');
+
+  $('timeNote').textContent = missing ? `${missing} title${missing>1?'s':''} had no runtime found and ${missing>1?'are':'is'} left out of watch time.` : '';
+}
+
+/* ---------- Grid ---------- */
+function ratingOk(f,rt){
+  if(!rt) return true;
+  if(rt==='none') return !f.rating;
+  return f.rating>=+rt;
+}
+
+function cardHtml(f){
+  return `
+    <button class="film" title="${esc(f.title)}${f.author?' by '+esc(f.author):''}${f.season?' (Season '+f.season+')':''}${f.rel&&!f.season?' ('+f.rel+')':''}${f.rewatch?' · Rewatch':''} ${f.genres.join(', ')}" aria-label="${esc(f.title)}${tagOf(f)?', '+tagOf(f):''}${f.rewatch?', rewatch':''}${f.rating?', rated '+f.rating+' out of 5':''}">
+      <div class="poster">${tagOf(f)?`<span class="tag">${tagOf(f)}</span>`:''}${f.rewatch?'<span class="tag re">Rewatch</span>':''}${f.poster?`<img src="${f.poster}" alt="" loading="lazy">`:esc(f.title)}</div>
+      <div class="name">${esc(f.title)}</div>
+      ${f.author?`<div class="by">${esc(f.author)}</div>`:''}
+      <div class="meta"><span class="stars">${stars(f.rating)}</span><span>${fmt(f.date)}</span></div>
+    </button>`;
+}
+
+function render(){
+  const q=$('q').value.trim().toLowerCase(), t=$('type').value, g=$('genre').value,
+        dec=$('decade').value, rt=$('rating').value, s=$('sort').value;
+  let list=films.filter(f=>(!q||(f.title+' '+f.author).toLowerCase().includes(q))
+    &&(!t||f.type===t)&&(!g||f.genres.includes(g))
+    &&(!dec||decadeOf(f)===+dec)&&ratingOk(f,rt));
+  list.sort((a,b)=> s==='rating'? b.rating-a.rating || b.date.localeCompare(a.date)
+                  : s==='title'? a.title.localeCompare(b.title)
+                  : b.date.localeCompare(a.date));
+  $('count').textContent=list.length+(list.length===1?' title':' titles');
+
+  if(!list.length){
+    $('grid').innerHTML='<div class="empty">Nothing matches. Try clearing the search or filters.</div>';
+    return;
+  }
+
+  // When sorted by date, start each year with a divider (year, line, number of titles)
+  const byDate = s==='date';
+  const perYear={};
+  if(byDate) list.forEach(f=>{ const k=f.date?f.date.slice(0,4):'No date'; perYear[k]=(perYear[k]||0)+1; });
+  let html='', last=null;
+  list.forEach(f=>{
+    if(byDate){
+      const k=f.date?f.date.slice(0,4):'No date';
+      if(k!==last){
+        const c=perYear[k];
+        html+=`<div class="yr" role="heading" aria-level="3"><span>${k}</span><i></i><em>${c} ${c===1?'title':'titles'}</em></div>`;
+        last=k;
+      }
+    }
+    html+=cardHtml(f);
+  });
+  $('grid').innerHTML=html;
+}
+
+function fillGenres(){
+  const all=[...new Set(films.flatMap(f=>f.genres))].sort(), cur=$('genre').value;
+  $('genre').innerHTML='<option value="">All genres</option>'+all.map(x=>`<option${x===cur?' selected':''}>${esc(x)}</option>`).join('');
+}
+
+function fillDecades(){
+  const all=[...new Set(films.map(decadeOf).filter(Boolean))].sort((a,b)=>b-a), cur=$('decade').value;
+  $('decade').innerHTML='<option value="">All decades</option>'+all.map(d=>`<option value="${d}"${String(d)===cur?' selected':''}>${d}s</option>`).join('');
+}
+
+function summary(){
+  const c=k=>films.filter(f=>f.type===k).length;
+  const items=[['movie','film','films','--star'],['tv','TV show','TV shows','--tv'],['book','book','books','--bk'],['gn','graphic novel','graphic novels','--gn']];
+  $('summary').innerHTML=items.map(([k,one,many,col])=>{
+    const n=c(k);
+    return `<span class="sum"><i class="ico" style="color:var(${col})">${ICON[k]}</i>${n} ${n===1?one:many}</span>`;
+  }).join('');
+}
+
+['q','type','genre','decade','rating','sort'].forEach(id=>$(id).addEventListener('input',render));
+$('year').addEventListener('input',renderStats);
+$('fbtn').addEventListener('click',()=>{
+  const open=$('filters').classList.toggle('open');
+  $('fbtn').setAttribute('aria-expanded',open);
+});
+
+/* ---------- Start ---------- */
+(async function start(){
+  try{
+    films=await loadFilms();
+  }catch(e){
+    $('summary').textContent='';
+    $('grid').innerHTML = e.message==='no-url'
+      ? '<div class="empty">Paste your published Google Sheet link into SHEET_CSV_URL at the top of the code.</div>'
+      : '<div class="empty">Could not load the Google Sheet.<br>Check it is published to the web as CSV, then refresh.</div>';
+    return;
+  }
+  markRewatches();
+  summary(); fillYears(); fillDecades(); render(); renderStats();
+  // Look up posters 8 at a time so large lists don't hit rate limits, and posters appear gradually
+  for(let i=0;i<films.length;i+=8){
+    await Promise.all(films.slice(i,i+8).map(enrich));
+    markRewatches(); fillGenres(); fillDecades(); render(); renderStats();
+  }
+})();
+</script>
+</body>
+</html>
