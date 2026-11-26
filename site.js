@@ -1,4 +1,4 @@
-/* Chaitanya · shared header, full-screen menu and footer */
+/* Chaitanya · shared sidebar, mobile menu and footer (Björk-style layout) */
 (function () {
   var page = document.body.getAttribute('data-page') || '';
 
@@ -11,21 +11,40 @@
     ['About me', 'https://chaitanyacd.wixsite.com/website/about'],
     ['My work', 'https://bit.ly/Chaitanya-portfolio']
   ];
+  var TAGLINE = 'Copywriter and communication designer, Boston';
 
-  var mark = '<svg class="mark" viewBox="0 0 36 22" aria-hidden="true">' +
-    '<rect x="0" y="6" width="6" height="16" fill="#EF4B3C"/>' +
-    '<rect x="6" y="0" width="6" height="22" fill="#FFBD17"/>' +
-    '<rect x="12" y="10" width="6" height="12" fill="#1973C0"/>' +
-    '<rect x="18" y="3" width="6" height="19" fill="#1DA849"/>' +
-    '<rect x="24" y="8" width="6" height="14" fill="#F9B6B1"/>' +
-    '<rect x="30" y="12" width="6" height="10" fill="#E8C5AC"/></svg>';
-  var logo = '<a class="site-logo" href="index.html">' + mark + '<span>Chaitanya</span></a>';
+  var OPEN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v1.5h14V5H5zm0 7.8h14v-1.5H5v1.5zM5 19h14v-1.5H5V19z"/></svg>';
+  var CLOSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 11.8l6.1-6.3-1-1-6.1 6.2-6.1-6.2-1 1 6.1 6.3-6.5 6.7 1 1 6.5-6.6 6.5 6.6 1-1z"/></svg>';
 
+  function navItems() {
+    return pages.map(function (p) {
+      return '<li><a href="' + p[1] + '"' + (p[2] === page ? ' aria-current="page"' : '') + '>' + p[0] + '</a></li>';
+    }).join('');
+  }
+  function moreItems() {
+    return elsewhere.map(function (e) {
+      return '<li><a href="' + e[1] + '" target="_blank" rel="noopener noreferrer">' + e[0] + ' \u2197</a></li>';
+    }).join('');
+  }
+
+  /* Desktop sidebar */
+  var side = document.createElement('aside');
+  side.className = 'sidebar-col';
+  side.innerHTML =
+    '<div class="site-sidebar"><div>' +
+    '<a class="site-title" href="index.html">Chaitanya</a>' +
+    '<p class="site-tagline">' + TAGLINE + '</p>' +
+    '<nav class="site-nav" aria-label="Main"><ul>' + navItems() + '</ul></nav>' +
+    '</div><ul class="site-more">' + moreItems() + '</ul></div>';
+
+  /* Mobile header */
   var hdr = document.createElement('header');
-  hdr.className = 'site-hdr' + (page === 'home' ? ' over' : '');
-  hdr.innerHTML = logo +
-    '<button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="siteMenu">Menu</button>';
+  hdr.className = 'site-header';
+  hdr.innerHTML =
+    '<a class="site-title" href="index.html">Chaitanya</a>' +
+    '<button class="icon-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteMenu">' + OPEN + '</button>';
 
+  /* Mobile full-screen menu */
   var menu = document.createElement('div');
   menu.className = 'site-menu';
   menu.id = 'siteMenu';
@@ -34,29 +53,42 @@
   menu.setAttribute('aria-modal', 'true');
   menu.setAttribute('aria-label', 'Menu');
   menu.innerHTML =
-    '<div class="site-menu-top">' + logo + '<button class="menu-btn" id="menuClose" type="button">Close</button></div>' +
-    '<nav aria-label="Pages"><ul class="big">' +
-    pages.map(function (p) {
-      return '<li><a href="' + p[1] + '"' + (p[2] === page ? ' aria-current="page"' : '') + '>' + p[0] + '</a></li>';
-    }).join('') +
-    '</ul></nav>' +
-    '<ul class="small">' +
-    elsewhere.map(function (e) {
-      return '<li><a href="' + e[1] + '" target="_blank" rel="noopener noreferrer">' + e[0] + ' \u2197</a></li>';
-    }).join('') +
-    '</ul>';
+    '<div class="top"><a class="site-title" href="index.html">Chaitanya</a>' +
+    '<button class="icon-btn" id="menuClose" type="button" aria-label="Close menu">' + CLOSE + '</button></div>' +
+    '<nav aria-label="Pages"><ul class="big">' + navItems() + '</ul></nav>' +
+    '<ul class="more">' + moreItems() + '</ul>';
 
+  /* Footer */
   var ftr = document.createElement('footer');
-  ftr.className = 'site-ftr';
-  ftr.textContent = '\u00A9 ' + new Date().getFullYear() + ' Chaitanya Deshpande';
+  ftr.className = 'site-footer';
+  ftr.innerHTML =
+    '<hr class="hatch" aria-hidden="true">' +
+    '<div class="foot"><span>\u00A9 ' + new Date().getFullYear() + ' Chaitanya Deshpande</span>' +
+    '<span class="theme-credit">Layout based on <a href="https://andersnoren.se/teman/bjork-wordpress-theme/" target="_blank" rel="noopener noreferrer">Bj\u00F6rk</a> by Anders Nor\u00E9n</span></div>';
 
-  document.body.insertBefore(hdr, document.body.firstChild);
+  /* Move the page's own content into the content column */
+  var shell = document.createElement('div');
+  shell.className = 'shell';
+  var cols = document.createElement('div');
+  cols.className = 'cols';
+  var content = document.createElement('div');
+  content.className = 'content';
+  var skip = /^(SCRIPT|STYLE|LINK|NOSCRIPT)$/;
+  Array.prototype.slice.call(document.body.childNodes).forEach(function (n) {
+    if (n.nodeType === 1 && skip.test(n.tagName)) return;
+    content.appendChild(n);
+  });
+  content.appendChild(ftr);
+  cols.appendChild(side);
+  cols.appendChild(content);
+  shell.appendChild(hdr);
+  shell.appendChild(cols);
+  document.body.insertBefore(shell, document.body.firstChild);
   document.body.appendChild(menu);
-  document.body.appendChild(ftr);
 
+  /* Menu open and close */
   var btn = hdr.querySelector('#menuBtn');
   var close = menu.querySelector('#menuClose');
-
   function open() {
     menu.hidden = false;
     btn.setAttribute('aria-expanded', 'true');
