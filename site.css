@@ -1,52 +1,108 @@
-/* Chaitanya · shared styles: palette, header, full-screen menu, footer */
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+/* Chaitanya · shared styles
+   Layout, type scale and component styles adapted from the Björk theme by Anders Norén
+   (GPL v2) https://andersnoren.se/teman/bjork-wordpress-theme/ */
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root{
-  --black:#0C0C0C; --white:#F2F2F2;
-  --bold:#EF4B3C; --rise:#FFBD17; --calm:#1973C0; --flow:#1DA849; --roam:#F9B6B1; --peach:#E8C5AC;
-  --site-h:58px;
-  /* the diary and Borrowed IQ pages use these older names, now mapped onto the palette */
-  --bg:#0C0C0C; --panel:#171717; --ink:#F2F2F2; --mute:#a6a6a6; --line:#2a2a2a;
-  --pink:#F9B6B1; --star:#1DA849; --tv:#1973C0; --bk:#E8C5AC; --gn:#EF4B3C;
+  /* Björk's six colour slots, filled with your palette (dark scheme). Change these to restyle the site. */
+  --foreground:#F2F2F2;  /* Off-White */
+  --background:#0C0C0C;  /* Black */
+  --primary:#EF4B3C;     /* Bold */
+  --secondary:#A6A6A6;
+  --tertiary:#2A2A2A;
+  --quaternary:#171717;
+
+  /* the rest of your palette */
+  --rise:#FFBD17; --calm:#1973C0; --flow:#1DA849; --roam:#F9B6B1; --peach:#E8C5AC;
+  --hover:var(--rise);   /* link hover colour */
+
+  /* names used by the diary and Borrowed IQ pages */
+  --bg:var(--background); --panel:var(--quaternary); --ink:var(--foreground); --mute:var(--secondary); --line:var(--tertiary);
+  --pink:var(--roam); --star:var(--flow); --tv:var(--calm); --bk:var(--peach); --gn:var(--primary);
+
+  --font:"Albert Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --gutter:clamp(20px,5vw,64px);
+  --gap:min(32px,6.4vw);
+
+  /* Björk's fluid type scale */
+  --fs-tiny:clamp(14px,.844rem + .156vw,16px);
+  --fs-small:clamp(16px,.969rem + .156vw,18px);
+  --fs-medium:clamp(17px,1rem + .3125vw,21px);
+  --fs-large:clamp(21px,1.266rem + .234vw,24px);
+  --fs-xl:clamp(24px,1.375rem + .625vw,32px);
+  --fs-h1:clamp(36px,1.8125rem + 2.1875vw,64px);
+  --fs-h2:clamp(33px,1.703rem + 1.797vw,56px);
+  --fs-h3:clamp(30px,1.594rem + 1.406vw,48px);
 }
-html{scroll-behavior:smooth}
-body{background:var(--black);color:var(--white);font-family:'Space Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-a:hover{color:var(--rise)}
-:focus-visible{outline:2px solid var(--rise);outline-offset:3px}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--background);color:var(--foreground);font-family:var(--font);font-size:var(--fs-medium);font-weight:500;line-height:1.5;letter-spacing:-.01em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body[data-page]{padding:var(--gutter);max-width:none;margin:0}
+body[data-page=diary],body[data-page=iq]{font-size:15px}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 
-/* Page spacing for the fixed header */
-body[data-page=diary]{padding-top:calc(var(--site-h) + 20px)}
-body[data-page=iq]{padding-top:var(--site-h)}
-body[data-page=iq] .hdr{top:var(--site-h)}
+a{color:inherit;text-decoration:underline;text-underline-offset:.2em}
+a:hover{color:var(--hover);text-decoration:none}
+:focus-visible{outline:2px solid var(--hover);outline-offset:3px}
 
-/* Header */
-.site-hdr{position:fixed;top:0;left:0;right:0;z-index:50;height:var(--site-h);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:var(--black);border-bottom:1px solid var(--line)}
-.site-hdr.over{background:linear-gradient(var(--black),rgba(12,12,12,0));border-bottom:0}
-.site-logo{display:inline-flex;align-items:center;gap:10px;color:var(--white);text-decoration:none;font-weight:700;font-size:16px}
-.site-logo:hover{color:var(--rise)}
-.mark{width:30px;height:20px;display:block}
-.menu-btn{background:none;border:1px solid var(--white);color:var(--white);padding:8px 18px;border-radius:999px;cursor:pointer;font:inherit;font-size:13px}
-.menu-btn:hover{background:var(--rise);border-color:var(--rise);color:var(--black)}
+/* Headings */
+h1,h2,h3{font-weight:600;letter-spacing:-.03em;line-height:1.15}
 
-/* Full-screen menu */
-.site-menu{position:fixed;inset:0;z-index:100;background:var(--black);display:flex;flex-direction:column;padding:0 24px 32px;overflow:auto;animation:menuin .2s ease}
+/* Page shell: sticky sidebar (23%) and content (77%) */
+.shell{max-width:1680px;margin:0 auto}
+.cols{display:grid;grid-template-columns:minmax(190px,23%) minmax(0,1fr);gap:var(--gap)}
+.content{min-width:0}
+.site-sidebar{position:sticky;top:var(--gutter);min-height:calc(100vh - 2 * var(--gutter));display:flex;flex-direction:column;justify-content:space-between;gap:40px}
+.site-title{display:inline-block;font-size:var(--fs-medium);font-weight:600;letter-spacing:-.02em;line-height:1.2;text-decoration:none}
+.site-title:hover{text-decoration:underline}
+.site-tagline{margin:6px 0 0;color:var(--secondary);font-size:var(--fs-small);line-height:1.35}
+.site-nav ul,.site-more{list-style:none;margin:0;padding:0}
+.site-nav ul{margin-top:36px;display:flex;flex-direction:column;gap:.3em}
+.site-nav a{font-size:var(--fs-medium);font-weight:600;text-decoration:none}
+.site-nav a[aria-current=page]{color:var(--primary)}
+.site-nav a[aria-current=page]:hover{color:var(--hover)}
+.site-more{display:flex;flex-direction:column;gap:.35em}
+.site-more a{font-size:var(--fs-small);color:var(--secondary)}
+.site-more a:hover{color:var(--hover)}
+
+/* Mobile header (replaces the sidebar under 782px) */
+.site-header{display:none}
+.icon-btn{background:none;border:0;color:var(--foreground);padding:4px;cursor:pointer;display:inline-flex;border-radius:8px}
+.icon-btn svg{width:32px;height:32px;fill:currentColor}
+.icon-btn:hover{color:var(--hover)}
+@media (max-width:781px){
+  .site-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+  .sidebar-col{display:none}
+  .cols{grid-template-columns:minmax(0,1fr)}
+}
+
+/* Full-screen menu (mobile) */
+.site-menu{position:fixed;inset:0;z-index:100;background:var(--background);padding:var(--gutter);overflow:auto;display:flex;flex-direction:column;animation:menuin .2s ease}
 .site-menu[hidden]{display:none}
 @keyframes menuin{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){.site-menu{animation:none}}
-.site-menu-top{height:var(--site-h);flex:none;display:flex;align-items:center;justify-content:space-between}
+.site-menu .top{display:flex;align-items:center;justify-content:space-between}
 .site-menu ul{list-style:none;margin:0;padding:0}
-.site-menu .big{margin-top:6vh}
-.site-menu .big a{display:inline-block;font-size:clamp(34px,8vw,84px);font-weight:700;line-height:1.15;padding:4px 0;color:var(--white);text-decoration:none}
-.site-menu .big a:hover{color:var(--rise)}
-.site-menu .big a[aria-current=page]::after{content:'';display:inline-block;width:.26em;height:.26em;border-radius:50%;background:var(--bold);margin-left:.3em}
-.site-menu .small{margin-top:auto;padding-top:40px;display:flex;flex-wrap:wrap;gap:12px 28px}
-.site-menu .small a{color:var(--white);font-size:15px;text-underline-offset:4px}
+.site-menu .big{margin-top:8vh;display:flex;flex-direction:column;gap:.2em}
+.site-menu .big a{font-size:var(--fs-h3);font-weight:600;letter-spacing:-.03em;line-height:1.15;text-decoration:none}
+.site-menu .big a[aria-current=page]{color:var(--primary)}
+.site-menu .more{margin-top:auto;padding-top:40px;display:flex;flex-wrap:wrap;gap:12px 28px}
+.site-menu .more a{font-size:var(--fs-small)}
+
+/* Buttons: pill, like Björk */
+.btn{display:inline-block;background:var(--primary);color:var(--background);border:2px solid var(--primary);border-radius:999px;padding:.55em 1.2em;font-family:inherit;font-size:var(--fs-small);font-weight:600;line-height:1.15;letter-spacing:-.01em;text-decoration:none;cursor:pointer}
+.btn:hover{background:var(--hover);border-color:var(--hover);color:var(--background);text-decoration:none}
+.btn.outline{background:transparent;color:var(--primary)}
+.btn.outline:hover{background:var(--hover);border-color:var(--hover);color:var(--background)}
+
+/* Angled separator, from Björk */
+.hatch{border:0;height:10px;margin:0;color:var(--tertiary);background-image:linear-gradient(-45deg,currentColor 25%,transparent 25%,transparent 50%,currentColor 50%,currentColor 75%,transparent 75%,transparent);background-size:5px 5px}
 
 /* Footer */
-.site-ftr{padding:28px 24px;border-top:1px solid var(--line);color:var(--mute);font-size:12px;margin-top:40px}
-body[data-page=home] .site-ftr{margin-top:0}
+.site-footer{margin-top:clamp(48px,8vw,96px)}
+.site-footer .foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px 24px;padding-top:24px;font-size:var(--fs-tiny);color:var(--secondary)}
+@media (max-width:500px){.theme-credit{display:none}}
 
-@media(max-width:640px){
-  .site-hdr,.site-menu{padding-left:16px;padding-right:16px}
-}
+/* Diary page title in Björk's heading style */
+body[data-page=diary] h1{color:var(--foreground);font-size:var(--fs-h3);font-weight:600;letter-spacing:-.03em;line-height:1.12;margin:0 0 10px}
