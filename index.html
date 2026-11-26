@@ -8,25 +8,29 @@
 <link rel="stylesheet" href="site.css">
 <script src="site.js" defer></script>
 <style>
-  /* Section 1: hero box, like Björk's front page */
-  .hero{display:flex;align-items:center;min-height:min(90vh,820px);padding:clamp(28px,6vw,72px);background:var(--quaternary);border:1px solid var(--tertiary);border-radius:8px}
-  .hero h1{margin:0;font-size:var(--fs-h1);max-width:16em}
-  .hero .kicker{display:block;margin-bottom:.35em;color:var(--secondary);font-size:var(--fs-xl);line-height:1.15}
-  .hero .know{margin:clamp(28px,5vw,48px) 0 12px;color:var(--secondary);font-size:var(--fs-small)}
+  /* Section 1: hero, centred like Björk's front page */
+  .hero{display:flex;align-items:center;min-height:calc(100vh - 2 * var(--gutter))}
+  .hero h1{margin:0;font-size:var(--fs-h1);max-width:17em}
+  .hero .kicker{display:block;margin-bottom:.4em;color:var(--secondary);font-size:var(--fs-xl);line-height:1.15}
+  .hero .know{margin:clamp(28px,4vw,44px) 0 12px;color:var(--secondary);font-size:var(--fs-small)}
   .btns{display:flex;flex-wrap:wrap;gap:1em}
   .hatch.gap{margin:clamp(28px,5vw,56px) 0}
 
-  /* Section 2: the rest of the Wix home text */
-  .intro{padding:0 0 5vh}
-  .intro h2{margin:0 0 clamp(24px,4vw,48px);font-size:var(--fs-h2);max-width:14em}
-  .two{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
-  .two p{margin:0 0 1em;line-height:1.5}
-  .two p.lead{font-size:var(--fs-large);line-height:1.35}
-  .coda{margin:clamp(36px,6vw,72px) 0 0;font-size:var(--fs-large);font-weight:600;letter-spacing:-.02em}
+  /* Section 2: three blocks */
+  .blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--gap)}
+  .block{display:flex;flex-direction:column;background:var(--quaternary)}
+  .block .art{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center}
+  .block .art svg{width:60%;height:auto;display:block}
+  .art.y{background:var(--rise)}
+  .art.b{background:var(--calm)}
+  .art.p{background:var(--roam)}
+  .block .body{display:flex;flex-direction:column;align-items:flex-start;flex:1;padding:clamp(20px,2.4vw,32px)}
+  .block h3{margin:0 0 .5em;font-size:var(--fs-xl)}
+  .block p{margin:0 0 1.4em;line-height:1.5}
+  .block .btn{margin-top:auto}
 
   @media (max-width:781px){
-    .hero{min-height:70vh}
-    .two{grid-template-columns:1fr}
+    .hero{min-height:60vh}
   }
 </style>
 </head>
@@ -46,20 +50,64 @@
 
   <hr class="hatch gap" aria-hidden="true">
 
-  <section class="intro" aria-labelledby="intro">
-    <h2 id="intro">Non scholae, sed vitae discimus</h2>
-    <div class="two">
-      <div>
-        <p>Thanks for dropping by!<br>i'm co-founder and partner at <a href="http://www.contentconspiracy.com" target="_blank" rel="noopener noreferrer">Content Conspiracy</a>.</p>
-        <p>i do nerdy stuff like write things down, and cooler stuff, like forgetting where I wrote it.</p>
-        <p>They say i'm good at making terrible puns, and also terribly good at spotting typos. The latter is second nature, and probably an outcome of being a reader for years.</p>
-      </div>
-      <div>
-        <p class="lead">My stock-in-trade is writing, but i also retreat to photography for inspiration. Unsurprisingly, it also influences the way i express. Like an endless series of prompts, my photographs are a record of half-formed ideas and an archive of wonderful memories.</p>
-        <p><a href="https://chaitanyacd.wixsite.com/website/gallery" target="_blank" rel="noopener noreferrer">see stills</a>, <a href="https://chaitanyacd.wixsite.com/website/blog" target="_blank" rel="noopener noreferrer">read stories</a></p>
-      </div>
+  <section aria-labelledby="explore">
+    <h2 id="explore" class="sr-only">Explore</h2>
+    <div class="blocks">
+
+      <article class="block">
+        <div class="art y" aria-hidden="true">
+          <svg viewBox="0 0 200 150">
+            <rect x="40" y="30" width="120" height="90" rx="10" fill="#FFFFFF" stroke="#0C0C0C" stroke-width="6"/>
+            <g fill="#0C0C0C">
+              <rect x="50" y="37" width="10" height="7" rx="2"/><rect x="68" y="37" width="10" height="7" rx="2"/><rect x="86" y="37" width="10" height="7" rx="2"/><rect x="104" y="37" width="10" height="7" rx="2"/><rect x="122" y="37" width="10" height="7" rx="2"/><rect x="140" y="37" width="10" height="7" rx="2"/>
+              <rect x="50" y="106" width="10" height="7" rx="2"/><rect x="68" y="106" width="10" height="7" rx="2"/><rect x="86" y="106" width="10" height="7" rx="2"/><rect x="104" y="106" width="10" height="7" rx="2"/><rect x="122" y="106" width="10" height="7" rx="2"/><rect x="140" y="106" width="10" height="7" rx="2"/>
+            </g>
+            <circle cx="100" cy="75" r="22" fill="#F9B6B1" stroke="#0C0C0C" stroke-width="6"/>
+            <path d="M93 64 L112 75 L93 86 Z" fill="#0C0C0C"/>
+          </svg>
+        </div>
+        <div class="body">
+          <h3>Film Diary</h3>
+          <p>Films, TV shows, books and graphic novels I've watched and read, logged year by year.</p>
+          <a class="btn dark" href="diary.html">open diary</a>
+        </div>
+      </article>
+
+      <article class="block">
+        <div class="art b" aria-hidden="true">
+          <svg viewBox="0 0 200 150">
+            <g stroke="#F2F2F2" stroke-width="6" stroke-linecap="round" fill="none">
+              <path d="M100 8 v9"/><path d="M60 22 l6 6"/><path d="M140 22 l-6 6"/><path d="M44 62 h9"/><path d="M156 62 h-9"/>
+            </g>
+            <g stroke="#0C0C0C" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M100 25 a38 38 0 0 1 22 69 v10 h-44 v-10 a38 38 0 0 1 22 -69z" fill="#FFBD17"/>
+              <path d="M84 118 h32 M90 131 h20" fill="none"/>
+            </g>
+          </svg>
+        </div>
+        <div class="body">
+          <h3>Borrowed IQ</h3>
+          <p>Articles, essays, podcasts and videos I've come across, scored for how curious they made me.</p>
+          <a class="btn dark" href="borrowed-iq.html">start browsing</a>
+        </div>
+      </article>
+
+      <article class="block">
+        <div class="art p" aria-hidden="true">
+          <svg viewBox="0 0 200 150">
+            <rect x="40" y="38" width="120" height="78" rx="8" fill="#FFFFFF" stroke="#0C0C0C" stroke-width="6" stroke-linejoin="round"/>
+            <path d="M42 44 L100 86 L158 44" fill="none" stroke="#0C0C0C" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="158" cy="38" r="13" fill="#EF4B3C" stroke="#0C0C0C" stroke-width="6"/>
+          </svg>
+        </div>
+        <div class="body">
+          <h3>Reach Out</h3>
+          <p>Got a project in mind, a pun to share, or a typo to report? Send me a note.</p>
+          <a class="btn dark" href="#" data-social="linkedin" target="_blank" rel="noopener noreferrer">contact me</a>
+        </div>
+      </article>
+
     </div>
-    <p class="coda">Thankfully, there's no newsletter. Or podcast. yet. <a href="https://chaitanyacd.wixsite.com/website/blog" target="_blank" rel="noopener noreferrer">Read stories.</a></p>
   </section>
 </main>
 
