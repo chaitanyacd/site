@@ -1,5 +1,12 @@
 /* Chaitanya · shared sidebar, mobile menu and footer (Björk-style layout) */
 (function () {
+  /* ===== REPLACE THESE TWO LINKS WITH YOUR OWN ===== */
+  var LINKS = {
+    instagram: 'https://www.instagram.com/YOUR_HANDLE/',
+    linkedin: 'https://www.linkedin.com/in/YOUR_PROFILE/'
+  };
+  /* ================================================= */
+
   var page = document.body.getAttribute('data-page') || '';
 
   var pages = [
@@ -7,41 +14,41 @@
     ['Film Diary', 'diary.html', 'diary'],
     ['Borrowed IQ', 'borrowed-iq.html', 'iq']
   ];
-  var elsewhere = [
-    ['About me', 'https://chaitanyacd.wixsite.com/website/about'],
-    ['My work', 'https://bit.ly/Chaitanya-portfolio']
-  ];
-  var TAGLINE = 'Copywriter and communication designer, Boston';
 
   var OPEN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v1.5h14V5H5zm0 7.8h14v-1.5H5v1.5zM5 19h14v-1.5H5V19z"/></svg>';
   var CLOSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 11.8l6.1-6.3-1-1-6.1 6.2-6.1-6.2-1 1 6.1 6.3-6.5 6.7 1 1 6.5-6.6 6.5 6.6 1-1z"/></svg>';
+  var ICON = {
+    instagram: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg>',
+    linkedin: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="3" fill="currentColor"/><rect class="cut" x="5.2" y="9.5" width="2.6" height="8"/><circle class="cut" cx="6.5" cy="6.6" r="1.5"/><path class="cut" d="M10.2 9.5h2.5v1.1c.5-.8 1.4-1.3 2.6-1.3 2.2 0 3.1 1.4 3.1 3.7v4.5h-2.6v-4c0-1-.3-1.8-1.3-1.8s-1.7.7-1.7 1.9v3.9h-2.6z"/></svg>'
+  };
 
   function navItems() {
     return pages.map(function (p) {
       return '<li><a href="' + p[1] + '"' + (p[2] === page ? ' aria-current="page"' : '') + '>' + p[0] + '</a></li>';
     }).join('');
   }
-  function moreItems() {
-    return elsewhere.map(function (e) {
-      return '<li><a href="' + e[1] + '" target="_blank" rel="noopener noreferrer">' + e[0] + ' \u2197</a></li>';
-    }).join('');
+  function social() {
+    return '<ul class="social">' +
+      '<li><a href="' + LINKS.instagram + '" target="_blank" rel="noopener noreferrer" aria-label="Instagram">' + ICON.instagram + '</a></li>' +
+      '<li><a href="' + LINKS.linkedin + '" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">' + ICON.linkedin + '</a></li>' +
+      '</ul>';
   }
+  var title = '<a class="site-title" href="index.html" aria-label="Chaitanya Deshpande, home">CD</a>';
 
   /* Desktop sidebar */
   var side = document.createElement('aside');
   side.className = 'sidebar-col';
   side.innerHTML =
-    '<div class="site-sidebar"><div>' +
-    '<a class="site-title" href="index.html">Chaitanya</a>' +
-    '<p class="site-tagline">' + TAGLINE + '</p>' +
+    '<div class="site-sidebar">' +
+    '<div class="site-top">' + title + '</div>' +
     '<nav class="site-nav" aria-label="Main"><ul>' + navItems() + '</ul></nav>' +
-    '</div><ul class="site-more">' + moreItems() + '</ul></div>';
+    '<div class="site-bottom">' + social() + '</div>' +
+    '</div>';
 
   /* Mobile header */
   var hdr = document.createElement('header');
   hdr.className = 'site-header';
-  hdr.innerHTML =
-    '<a class="site-title" href="index.html">Chaitanya</a>' +
+  hdr.innerHTML = title +
     '<button class="icon-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteMenu">' + OPEN + '</button>';
 
   /* Mobile full-screen menu */
@@ -53,18 +60,15 @@
   menu.setAttribute('aria-modal', 'true');
   menu.setAttribute('aria-label', 'Menu');
   menu.innerHTML =
-    '<div class="top"><a class="site-title" href="index.html">Chaitanya</a>' +
+    '<div class="top">' + title +
     '<button class="icon-btn" id="menuClose" type="button" aria-label="Close menu">' + CLOSE + '</button></div>' +
     '<nav aria-label="Pages"><ul class="big">' + navItems() + '</ul></nav>' +
-    '<ul class="more">' + moreItems() + '</ul>';
+    social();
 
   /* Footer */
   var ftr = document.createElement('footer');
   ftr.className = 'site-footer';
-  ftr.innerHTML =
-    '<hr class="hatch" aria-hidden="true">' +
-    '<div class="foot"><span>\u00A9 ' + new Date().getFullYear() + ' Chaitanya Deshpande</span>' +
-    '<span class="theme-credit">Layout based on <a href="https://andersnoren.se/teman/bjork-wordpress-theme/" target="_blank" rel="noopener noreferrer">Bj\u00F6rk</a> by Anders Nor\u00E9n</span></div>';
+  ftr.innerHTML = '<div class="foot"><span>\u00A9 ' + new Date().getFullYear() + ' Chaitanya Deshpande</span></div>';
 
   /* Move the page's own content into the content column */
   var shell = document.createElement('div');
@@ -85,6 +89,11 @@
   shell.appendChild(cols);
   document.body.insertBefore(shell, document.body.firstChild);
   document.body.appendChild(menu);
+
+  /* Any link marked data-social gets your social address */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-social]'), function (a) {
+    a.href = LINKS[a.getAttribute('data-social')] || '#';
+  });
 
   /* Menu open and close */
   var btn = hdr.querySelector('#menuBtn');
