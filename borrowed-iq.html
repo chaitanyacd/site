@@ -3,107 +3,89 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Borrowed IQ</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+<title>Borrowed IQ · Chaitanya Deshpande</title>
 <style>
-  :root{--bg:#14181c;--panel:#1f252b;--ink:#e8edf1;--mute:#8a98a5;--line:#2c343c;--pink:#FFAAE3;--radius:14px}
+  :root{--radius:14px}
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 'Space Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-  a{color:inherit}
-  button,select,input{font:inherit;font-size:13px;color:var(--ink)}
-  :focus-visible{outline:2px solid var(--pink);outline-offset:2px}
+  button,select,input{font:inherit;font-size:14px;color:var(--ink)}
 
-  /* Header with Topics drop-down */
-  .hdr{position:sticky;top:0;z-index:30;background:rgba(20,24,28,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-  .hdr-in{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:22px;height:60px}
-  .brand{color:var(--pink);font-size:18px;text-decoration:none;white-space:nowrap}
-  .nav{display:flex;align-items:center;gap:4px;flex:1}
-  .nav>a,.nav>button{background:none;border:0;padding:10px 12px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
-  .nav>a:hover,.nav>button:hover,.nav>button[aria-expanded=true]{background:var(--panel)}
-  .nav .sp{flex:1}
+  /* Topics bar */
+  .hdr{position:sticky;top:0;z-index:30;background:rgba(242,242,242,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-bottom:28px}
+  .hdr-in{display:flex;align-items:center;height:52px}
+  .nav{display:flex;align-items:center;gap:4px}
+  .nav>button{background:none;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--ink);font-weight:600}
+  .nav>button:first-child{margin-left:-12px}
+  .nav>button:hover,.nav>button[aria-expanded=true]{background:var(--hover);color:var(--foreground)}
   .caret{width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .15s}
   button[aria-expanded=true] .caret{transform:rotate(-135deg)}
-  .burger{display:none;background:none;border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer;margin-left:auto}
-  .mega{display:none;position:absolute;left:0;right:0;top:100%;background:var(--panel);border-bottom:1px solid var(--line);max-height:70vh;overflow:auto}
+  .mega{display:none;position:absolute;left:0;right:0;top:100%;background:var(--panel);border:1px solid var(--line);border-radius:0 0 var(--radius) var(--radius);box-shadow:0 12px 30px rgba(0,0,0,.12);max-height:70vh;overflow:auto}
   .mega.open{display:block}
-  .mega-in{max-width:1200px;margin:0 auto;padding:22px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+  .mega-in{padding:18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
   .tile{display:flex;gap:12px;align-items:flex-start;text-align:left;background:none;border:1px solid transparent;border-radius:12px;padding:12px;cursor:pointer}
   .tile:hover,.tile.on{background:var(--bg);border-color:var(--line)}
-  .tile.on{border-color:var(--pink)}
+  .tile.on{border-color:var(--primary)}
   .tile .ic{flex:none;width:38px;height:38px;border-radius:10px;background:var(--bg);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:18px}
-  .tile b{display:block;font-weight:400;color:var(--ink)}
-  .tile em{display:block;font-style:normal;font-size:12px;color:var(--mute);margin-top:2px}
+  .tile b{display:block;font-weight:600;color:var(--ink)}
+  .tile em{display:block;font-style:normal;font-size:13px;color:var(--mute);margin-top:2px}
 
-  .wrap{max-width:1200px;margin:0 auto;padding:36px 24px 60px}
-  h1{margin:0 0 8px;font-size:30px;font-weight:400;color:var(--pink)}
-  .lede{max-width:62ch;color:var(--mute);margin:0 0 6px}
-  .stat{color:var(--mute);font-size:12px;margin:0 0 26px}
+  h1{margin:0 0 10px;font-size:var(--fs-h3);font-weight:600;letter-spacing:-.03em;line-height:1.12;color:var(--ink)}
+  .lede{max-width:62ch;color:var(--mute);margin:0 0 6px;font-size:16px}
+  .stat{color:var(--mute);font-size:13px;margin:0 0 26px}
 
   .controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
-  .controls input,.controls select,.controls button{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+  .controls input,.controls select,.controls button{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
   .controls input{flex:1;min-width:180px}
   .controls button{cursor:pointer}
-  .bar{display:flex;align-items:center;gap:12px;color:var(--mute);font-size:12px;margin-bottom:22px;min-height:20px}
+  .controls button:hover{background:var(--hover);border-color:var(--hover);color:var(--foreground)}
+  .bar{display:flex;align-items:center;gap:12px;color:var(--mute);font-size:13px;margin-bottom:22px;min-height:20px}
 
-  .sec{display:flex;align-items:center;gap:14px;margin:30px 0 4px}
+  .sec{display:flex;align-items:center;gap:14px;margin:34px 0 4px}
   .sec:first-child{margin-top:0}
-  .sec h2{margin:0;font-size:22px;font-weight:400;color:var(--pink);line-height:1.2}
+  .sec h2{margin:0;font-size:24px;font-weight:600;letter-spacing:-.02em;color:var(--pink);line-height:1.2}
   .sec i{flex:1;height:1px;background:var(--line)}
-  .sec em{font-style:normal;font-size:11px;color:var(--mute);white-space:nowrap}
-  .blurb{color:var(--mute);margin:0 0 4px;font-size:13px}
+  .sec em{font-style:normal;font-size:12px;color:var(--mute);white-space:nowrap}
+  .blurb{color:var(--mute);margin:0 0 4px;font-size:14px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:28px 22px;margin-top:18px}
 
   .card{display:block;text-decoration:none;color:inherit}
-  .thumb{aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.18);background:var(--panel);box-shadow:0 2px 10px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+  a.card:hover{background:none;color:inherit}
+  .thumb{aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;border:1px solid rgba(0,0,0,.12);background:var(--panel);box-shadow:0 2px 10px rgba(0,0,0,.12);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
   .thumb img.cover{width:100%;height:100%;object-fit:cover;display:block}
-  .thumb.fb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#252d35,#1a2026);color:var(--mute);font-size:12px;padding:10px;text-align:center}
+  .thumb.fb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#ffffff,#e6e6e6);color:var(--mute);font-size:13px;padding:10px;text-align:center}
   .thumb.fb img{width:44px;height:44px;border-radius:10px}
-  @media (hover:hover){a.card:hover .thumb{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.5);border-color:rgba(255,255,255,.35)}}
+  @media (hover:hover){a.card:hover .thumb{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.2);border-color:rgba(0,0,0,.28)}}
   @media (prefers-reduced-motion:reduce){.thumb{transition:none}a.card:hover .thumb{transform:none}}
-  .lab{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:11px;color:var(--mute)}
+  .lab{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:12px;color:var(--mute)}
   .lab svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-  .lab b{font-weight:400;color:var(--ink)}
-  .card h3{margin:6px 0 6px;font-size:15px;font-weight:400;line-height:1.35;overflow-wrap:anywhere}
-  a.card:hover h3{color:var(--pink)}
-  .note{margin:0 0 10px;font-size:12px;color:var(--mute);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-  .foot{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;color:var(--mute)}
+  .lab b{font-weight:500;color:var(--ink)}
+  .card h3{margin:6px 0 6px;font-size:17px;font-weight:600;letter-spacing:-.02em;line-height:1.3;overflow-wrap:anywhere}
+  a.card:hover h3{text-decoration:underline;text-decoration-color:var(--hover);text-decoration-thickness:.2em;text-underline-offset:.12em}
+  .note{margin:0 0 10px;font-size:14px;color:var(--mute);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--mute)}
   .score{display:inline-flex;gap:4px}
   .d{width:9px;height:9px;border-radius:50%;border:1px solid var(--pink)}
   .d.on{background:var(--pink)}
   .empty{color:var(--mute);padding:50px 0;text-align:center;line-height:1.7}
 
   @media(max-width:760px){
-    .hdr-in{padding:0 16px}
-    .burger{display:block}
-    .nav{display:none;position:absolute;top:60px;left:0;right:0;background:var(--panel);border-bottom:1px solid var(--line);flex-direction:column;align-items:stretch;padding:10px 12px;gap:2px;max-height:80vh;overflow:auto}
-    .nav.open{display:flex}
-    .nav>a,.nav>button{justify-content:space-between}
-    .nav .sp{display:none}
-    .mega{position:static;border:0;max-height:none;background:none}
-    .mega-in{padding:4px 0 8px;grid-template-columns:1fr}
-    .wrap{padding:26px 16px 50px}
-    h1{font-size:25px}
+    .mega-in{grid-template-columns:1fr}
   }
 </style>
+<link rel="stylesheet" href="site.css">
+<script src="site.js" defer></script>
 </head>
-<body>
+<body data-page="iq">
 <header class="hdr">
   <div class="hdr-in">
-    <a class="brand" href="#" id="brand">Borrowed IQ</a>
-    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
-    <nav class="nav" id="nav" aria-label="Main">
+    <nav class="nav" id="nav" aria-label="Borrowed IQ">
       <button id="topicsBtn" type="button" aria-expanded="false" aria-controls="mega">Topics <i class="caret"></i></button>
       <div class="mega" id="mega"><div class="mega-in" id="megaIn"></div></div>
       <button id="topPicks" type="button">Top picks</button>
-      <span class="sp"></span>
-      <a href="./">Film diary</a>
     </nav>
   </div>
 </header>
 
-<main class="wrap">
+<main>
   <h1>Borrowed IQ</h1>
   <p class="lede">Articles, essays, podcasts and videos I've come across, sorted by topic. Curiosity score: 5 means I loved it and found it new and interesting.</p>
   <p class="stat" id="stat">Loading…</p>
@@ -119,7 +101,7 @@
     </select>
     <select id="sort" aria-label="Sort">
       <option value="topic">By topic</option>
-      <option value="new">Newest</option>
+      <option value="new">Latest added</option>
       <option value="score">Highest score</option>
     </select>
     <button id="clear" type="button">Clear</button>
@@ -130,13 +112,20 @@
 
 <script>
 /* ===== 1. PASTE YOUR PUBLISHED "Borrowed IQ" TAB LINK ===== */
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTj6KMGSl8B5QMi1alkTwjdItAjxE8g4eW3uz1emvPtv29lml0xP1Soagn45S_vYtess6o5g_fVgvJe/pub?gid=15228694&single=true&output=csv';
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTj6KMGSl8B5QMi1alkTwjdItAjxE8g4eW3uz1emvPtv29lml0xP1Soagn45S_vYtess6o5g_fVgvJe/pub?gid=15228694&single=true&output=csv
+';
 
-/* ===== 2. OPTIONAL: an icon and a one-line description for each topic in the Topics menu =====
-   The name must match the Category in your sheet exactly. Topics you leave out still work. */
+/* ===== 2. TOPICS: icon and one-line description (menu order follows this list) ===== */
 const TOPIC_INFO = {
-  // 'Science': {icon:'🔬', blurb:'How the world works'},
-  // 'History': {icon:'🏛️', blurb:'Stories from the past'},
+  'Art & Culture':       {icon:'🎨', blurb:'Art, design, music and how culture moves'},
+  'Creativity & Work':   {icon:'💡', blurb:'Making things and doing work that matters'},
+  'Curious & Fresh':     {icon:'✨', blurb:'New to me and worth a look'},
+  'Writing & Education': {icon:'✍️', blurb:'Writing well, learning and teaching'},
+  'History':             {icon:'🏛️', blurb:'Stories from the past'},
+  'Life & Ideas':        {icon:'🌱', blurb:'Ways of thinking and living'},
+  'Pop Culture':         {icon:'🎬', blurb:'Film, TV, music and what everyone is talking about'},
+  'Science & Tech':      {icon:'🔬', blurb:'How the world and its machines work'},
+  'Sports':              {icon:'⚽', blurb:'Games, athletes and the stories around them'}
 };
 /* ===== EVERYTHING BELOW STAYS AS IT IS ===== */
 
@@ -156,7 +145,6 @@ const safeUrl=u=>/^https?:\/\//i.test(u)?u:'';
 const typeOf=(t,u)=>/pod/i.test(t)?'Podcast':/vid|youtube|watch/i.test(t)?'Video':/essay/i.test(t)?'Essay':(!t&&ytId(u))?'Video':'Article';
 const ytId=u=>{const m=String(u).match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/))([\w-]{11})/);return m?m[1]:'';};
 const domain=u=>{try{return new URL(u).hostname.replace(/^www\./,'');}catch(e){return '';}};
-const fmtDate=d=>d?new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',year:'numeric'}):'';
 function cacheGet(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
 function cacheSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 
@@ -181,15 +169,6 @@ function parseCSV(text){
   if(row.some(x=>x.trim()!=='')) rows.push(row);
   return rows;
 }
-function toDate(v){
-  v=String(v||'').trim();
-  if(!v) return '';
-  if(/^\d{4}$/.test(v)) return v+'-01-01';
-  if(/^\d{4}-\d{2}-\d{2}/.test(v)) return v.slice(0,10);
-  const d=new Date(v);
-  if(isNaN(d.getTime())) return '';
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-}
 async function load(){
   if(CSV_URL.startsWith('PASTE')) throw new Error('no-url');
   const res=await fetch(CSV_URL+(CSV_URL.includes('?')?'&':'?')+'_='+Date.now());
@@ -203,7 +182,7 @@ async function load(){
     return {
       idx, title:o.title, url, type:typeOf(o.type||'',url), cat:o.category||o.topic||'Other',
       src:o.source||o.author||'', score:Math.max(0,Math.min(5,Math.round(parseFloat(o.curiosityscore||o.score)||0))),
-      date:toDate(o.dateadded||o.date), note:o.note||o.notes||'', image:o.imageurl||o.image||''
+      note:o.note||o.notes||'', image:o.imageurl||o.image||''
     };
   }).filter(i=>i.title);
 }
@@ -233,7 +212,8 @@ async function podArt(i){
 function topics(){
   const m={};
   items.forEach(i=>{(m[i.cat]=m[i.cat]||[]).push(i);});
-  return Object.entries(m).sort((a,b)=>b[1].length-a[1].length||a[0].localeCompare(b[0]));
+  const ord=Object.keys(TOPIC_INFO), pos=n=>ord.indexOf(n)<0?999:ord.indexOf(n);
+  return Object.entries(m).sort((a,b)=>pos(a[0])-pos(b[0])||b[1].length-a[1].length||a[0].localeCompare(b[0]));
 }
 function topicBlurb(name,list){
   const t=TOPIC_INFO[name]; if(t&&t.blurb) return t.blurb;
@@ -255,18 +235,17 @@ function visible(){
     (!S.topic||i.cat===S.topic)&&(!S.type||i.type===S.type)&&(!S.score||i.score>=+S.score)
     &&(!q||(i.title+' '+i.src+' '+i.note+' '+i.cat).toLowerCase().includes(q)));
 }
-const byScore=(a,b)=>b.score-a.score||b.date.localeCompare(a.date)||b.idx-a.idx;
-const byNew=(a,b)=>b.date.localeCompare(a.date)||b.idx-a.idx;
+const byScore=(a,b)=>b.score-a.score||b.idx-a.idx;
+const byNew=(a,b)=>b.idx-a.idx;
 
 function card(i){
   const dots=[1,2,3,4,5].map(n=>`<i class="d${n<=i.score?' on':''}"></i>`).join('');
-  const meta=[i.src,fmtDate(i.date)].filter(Boolean).join(' · ');
   const label=i.score?`Curiosity score ${i.score} out of 5`:'Not scored';
   const inner=`${thumb(i)}
     <div class="lab">${TICON[i.type]}<span>${i.type} in <b>${esc(i.cat)}</b></span></div>
     <h3>${esc(i.title)}</h3>
     ${i.note?`<p class="note">${esc(i.note)}</p>`:''}
-    <div class="foot"><span class="score" role="img" aria-label="${label}">${dots}</span><span>${esc(meta)}</span></div>`;
+    <div class="foot"><span class="score" role="img" aria-label="${label}">${dots}</span><span>${esc(i.src)}</span></div>`;
   return i.url?`<a class="card" href="${esc(i.url)}" target="_blank" rel="noopener noreferrer">${inner}</a>`:`<div class="card">${inner}</div>`;
 }
 
@@ -320,21 +299,14 @@ $('topicsBtn').addEventListener('click',()=>{
 $('megaIn').addEventListener('click',e=>{
   const b=e.target.closest('[data-topic]'); if(!b) return;
   S.topic=b.dataset.topic; syncControls(); update(); closeMenus();
-  $('nav').classList.remove('open'); $('burger').setAttribute('aria-expanded','false');
   window.scrollTo({top:0,behavior:'smooth'});
 });
 $('topPicks').addEventListener('click',()=>{
-  S.score='5'; syncControls(); update(); closeMenus(); $('nav').classList.remove('open');
+  S.score='5'; syncControls(); update(); closeMenus();
   window.scrollTo({top:0,behavior:'smooth'});
 });
-$('brand').addEventListener('click',e=>{
-  e.preventDefault(); Object.assign(S,{topic:'',type:'',score:'',sort:'topic',q:''}); syncControls(); update(); window.scrollTo({top:0});
-});
-$('burger').addEventListener('click',()=>{
-  const open=$('nav').classList.toggle('open'); $('burger').setAttribute('aria-expanded',open);
-});
-document.addEventListener('click',e=>{ if(!e.target.closest('.nav')&&!e.target.closest('.burger')) closeMenus(); });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeMenus(); $('topicsBtn').focus(); } });
+document.addEventListener('click',e=>{ if(!e.target.closest('.nav')) closeMenus(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenus(); });
 $('q').addEventListener('input',e=>{ S.q=e.target.value; update(); });
 ['type','score','sort'].forEach(id=>$(id).addEventListener('input',e=>{ S[id]=e.target.value; update(); }));
 $('clear').addEventListener('click',()=>{ Object.assign(S,{topic:'',type:'',score:'',q:''}); syncControls(); update(); });
@@ -355,7 +327,6 @@ $('clear').addEventListener('click',()=>{ Object.assign(S,{topic:'',type:'',scor
   const fives=items.filter(i=>i.score===5).length;
   $('stat').textContent=`${items.length} items · ${topics().length} topics · ${fives} scored 5`;
   syncControls(); render();
-  // Podcast cover art, a few at a time
   const pods=items.filter(i=>i.type==='Podcast'&&!i.image);
   for(let k=0;k<pods.length;k+=6){
     await Promise.all(pods.slice(k,k+6).map(podArt));
