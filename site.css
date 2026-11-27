@@ -113,3 +113,10 @@ body[data-page=diary] .poster{border-color:rgba(0,0,0,.14);box-shadow:0 2px 10px
 @media (hover:hover){body[data-page=diary] .film:hover .poster{box-shadow:0 10px 24px rgba(0,0,0,.22);border-color:rgba(0,0,0,.3)}}
 body[data-page=diary] .tag{background:rgba(255,255,255,.92);color:var(--foreground)}
 body[data-page=diary] .tag.re{color:var(--primary);border-color:var(--primary)}
+/* Animated dot, top right, lined up with CD */
+.shell{position:relative}
+.corner-dot{position:absolute;top:calc(var(--fs-xl) * .55);right:0;width:96px;height:96px;transform:translateY(-50%);pointer-events:none;z-index:5}
+@media (max-width:781px){.corner-dot{width:56px;height:56px;top:20px;right:56px}}
+@media (prefers-reduced-motion:reduce){.corner-dot{display:none}}
+/* keep long page titles clear of the dot */
+@media (min-width:782px){body[data-page=diary] h1,body[data-page=iq] h1{max-width:calc(100% - 110px)}}
